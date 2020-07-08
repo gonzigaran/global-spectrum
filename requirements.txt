@@ -1,1 +1,3 @@
 folpy==0.1.2
+ipython==7.16.1
+flake8==3.8.3
