@@ -1,0 +1,85 @@
+#!/usr/bin/env python
+# -*- coding: utf8 -*-
+
+from folpy.semantics.congruences import sup_proj
+
+
+def minimals(sigma):
+    """
+    Dado un conjunto de congruencias `sigma` devuelve las minimales
+    """
+    result = [tita for tita in sigma if all([not(tita > delta) for delta in sigma])]
+    return result
+
+
+def antichain(sigma, i, deltas):
+    """
+    Dado un conjuntos de congruencias `delta` y una congruencia nueva `i`,
+    decide si `i` es incomparable con las congruencias de `delta`
+    """
+    for j in deltas:
+        if sigma[i] <= sigma[j] or sigma[j] <= sigma[i]:
+            return False
+    return True
+
+
+def gen_roots(I, delta):
+    """
+    Dado un conjunto de elementos `I` y una congruencia `delta`, devuelve los
+    representantes en `delta` para cada elemento en `I`
+    """
+    result = []
+    for x in I:
+        root = delta.root(x)
+        if root not in result:
+            result.append(root)
+    return result
+
+
+def extend_const_sys(sigma, intersection, deltas, i):
+    """
+    Dado un conjunto de congruencias y una congruencia nueva, genera sistemas
+    sin solucion con los primeros elementos constantes
+    """
+    output = []
+    n = len(deltas)
+    gammas = []
+    for k in range(n):
+        gammas.append(sup_proj(sigma,
+                               sigma[i],
+                               sigma[deltas[k]]))
+    algebra = sigma[i].algebra
+    U = algebra.universe.copy()
+    while U != []:
+        a = U[0]
+        blocks = [gammas[k].block(a) for k in range(n)]
+        I = frozenset.intersection(*blocks)
+        I_roots = gen_roots(I, sigma[i])
+        for z in I_roots:
+            if a not in sigma[i].block(z):
+                a_tuple = n * [a]
+                output.append(a_tuple + [z])
+    return output
+
+
+def extend_non_sol_sys(sigma, deltas, i, vector):
+    """
+    Dado un conjunto de sismtemas de congruencias sin solucion y una
+    congruencia nueva, extiende el sistema a nuevos sistemas sin solucion
+    """
+    output = []
+    n = range(deltas)
+    blocks = [(sup_proj(sigma,
+                        sigma[i],
+                        sigma[deltas[k]])).block(vector[k]) for k in range(n)]
+    I = frozenset.intersection(*blocks)
+    I_roots = gen_roots(I, sigma[i])
+    for z in I_roots:
+        output.append(vector + [z])
+    return output
+
+
+if __name__ == "__main__":
+    import doctest
+
+    doctest.testmod()
