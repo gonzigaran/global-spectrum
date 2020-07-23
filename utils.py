@@ -8,7 +8,9 @@ def minimals(sigma):
     """
     Dado un conjunto de congruencias `sigma` devuelve las minimales
     """
-    result = [tita for tita in sigma if all([not(tita > delta) for delta in sigma])]
+    result = [tita for tita in sigma if all(
+        [not(tita > delta) for delta in sigma]
+        )]
     return result
 
 
@@ -23,13 +25,13 @@ def antichain(sigma, i, deltas):
     return True
 
 
-def gen_roots(I, delta):
+def gen_roots(elements, delta):
     """
-    Dado un conjunto de elementos `I` y una congruencia `delta`, devuelve los
-    representantes en `delta` para cada elemento en `I`
+    Dado un conjunto de elementos `elements` y una congruencia `delta`,
+    devuelve los representantes en `delta` para cada elemento en `elements`
     """
     result = []
-    for x in I:
+    for x in elements:
         root = delta.root(x)
         if root not in result:
             result.append(root)
@@ -53,9 +55,9 @@ def extend_const_sys(sigma, intersection, deltas, i):
     while U != []:
         a = U[0]
         blocks = [gammas[k].block(a) for k in range(n)]
-        I = frozenset.intersection(*blocks)
-        I_roots = gen_roots(I, sigma[i])
-        for z in I_roots:
+        elements = frozenset.intersection(*blocks)
+        elements_roots = gen_roots(elements, sigma[i])
+        for z in elements_roots:
             if a not in sigma[i].block(z):
                 a_tuple = n * [a]
                 output.append(a_tuple + [z])
@@ -72,9 +74,9 @@ def extend_non_sol_sys(sigma, deltas, i, vector):
     blocks = [(sup_proj(sigma,
                         sigma[i],
                         sigma[deltas[k]])).block(vector[k]) for k in range(n)]
-    I = frozenset.intersection(*blocks)
-    I_roots = gen_roots(I, sigma[i])
-    for z in I_roots:
+    elements = frozenset.intersection(*blocks)
+    elements_roots = gen_roots(elements, sigma[i])
+    for z in elements_roots:
         output.append(vector + [z])
     return output
 
