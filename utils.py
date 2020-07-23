@@ -61,6 +61,7 @@ def extend_const_sys(sigma, intersection, deltas, i):
             if a not in sigma[i].block(z):
                 a_tuple = n * [a]
                 output.append(a_tuple + [z])
+        U = [x for x in U if x not in elements]
     return output
 
 
