@@ -45,23 +45,25 @@ def extend_const_sys(sigma, intersection, deltas, i):
     """
     output = []
     n = len(deltas)
+    if n == 0:
+        return output
     gammas = []
     for k in range(n):
         gammas.append(sup_proj(sigma,
                                sigma[i],
                                sigma[deltas[k]]))
     algebra = sigma[i].algebra
-    U = algebra.universe.copy()
-    while U != []:
-        a = U[0]
+    for a in algebra.universe:
         blocks = [gammas[k].block(a) for k in range(n)]
         elements = frozenset.intersection(*blocks)
         elements_roots = gen_roots(elements, sigma[i])
         for z in elements_roots:
-            if a not in sigma[i].block(z):
+            blocks = [sigma[deltas[k]].block(a) for k in range(n)]
+            blocks += [sigma[i].block(z)]
+            solutions = frozenset.intersection(*blocks)
+            if solutions == frozenset({}):
                 a_tuple = n * [a]
                 output.append(a_tuple + [z])
-        U = [x for x in U if x not in elements]
     return output
 
 
@@ -71,7 +73,7 @@ def extend_non_sol_sys(sigma, deltas, i, vector):
     congruencia nueva, extiende el sistema a nuevos sistemas sin solucion
     """
     output = []
-    n = range(deltas)
+    n = len(deltas)
     blocks = [(sup_proj(sigma,
                         sigma[i],
                         sigma[deltas[k]])).block(vector[k]) for k in range(n)]

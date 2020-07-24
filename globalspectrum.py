@@ -2,6 +2,7 @@
 # -*- coding: utf8 -*-
 
 from utils import extend_const_sys, extend_non_sol_sys, minimals
+from globalkernel import all_global_kernels
 
 
 def is_global_spectrum(A, sigma):
@@ -27,6 +28,27 @@ def is_global_spectrum(A, sigma):
         return True
     else:
         return False
+
+
+def is_global_indescomposible(A):
+    """
+    Dada un algebra, decide si es globalmente indescomponible
+
+    >>> from folpy.examples.lattices import *
+    >>> is_global_indescomposible(gen_chain(2))
+    True
+    >>> is_global_indescomposible(gen_chain(3))
+    True
+    >>> is_global_indescomposible(gen_chain(4))
+    False
+    >>> is_global_indescomposible(gen_chain(5))
+    False
+    >>> is_global_indescomposible(rhombus)
+    False
+    """
+    sigma = A.congruences()
+    sigma.remove(A.mincon())
+    return all_global_kernels(A, sigma, all_solutions=False) == []
 
 
 if __name__ == "__main__":
