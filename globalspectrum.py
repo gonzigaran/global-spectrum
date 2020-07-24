@@ -9,6 +9,13 @@ def is_global_spectrum(A, sigma):
     """
     Dada un algebra `A` y un conjunto `sigma` de congruencias de `A`, decide si
     `sigma` es un espectro global de `A`
+
+    >>> from folpy.examples.lattices import *
+    >>> sigma = rhombus.congruences()
+    >>> sigma.remove(rhombus.mincon())
+    >>> sigma.remove(rhombus.maxcon())
+    >>> is_global_spectrum(rhombus, sigma)
+    True
     """
     sigma_m = minimals(sigma)
     deltas = []
