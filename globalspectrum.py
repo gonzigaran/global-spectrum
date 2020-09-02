@@ -11,7 +11,7 @@ def is_global_spectrum(A, sigma):
     `sigma` es un espectro global de `A`
 
     >>> from folpy.examples.lattices import *
-    >>> sigma = rhombus.congruences()
+    >>> sigma = rhombus.congruences().copy()
     >>> sigma.remove(rhombus.mincon())
     >>> sigma.remove(rhombus.maxcon())
     >>> is_global_spectrum(rhombus, sigma)
@@ -37,20 +37,20 @@ def is_global_spectrum(A, sigma):
         return False
 
 
-def is_global_indescomposible(A):
+def is_global_indecomposable(A):
     """
     Dada un algebra, decide si es globalmente indescomponible
 
     >>> from folpy.examples.lattices import *
-    >>> is_global_indescomposible(gen_chain(2))
+    >>> is_global_indecomposable(gen_chain(2))
     True
-    >>> is_global_indescomposible(gen_chain(3))
+    >>> is_global_indecomposable(gen_chain(3))
     True
-    >>> is_global_indescomposible(gen_chain(4))
+    >>> is_global_indecomposable(gen_chain(4))
     False
-    >>> is_global_indescomposible(gen_chain(5))
+    >>> is_global_indecomposable(gen_chain(5))
     False
-    >>> is_global_indescomposible(rhombus)
+    >>> is_global_indecomposable(rhombus)
     False
     """
     sigma = A.congruences()
