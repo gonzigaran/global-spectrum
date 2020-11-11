@@ -4,9 +4,9 @@
 from folpy.semantics.classes import check_isos
 from folpy.utils.parser.parser import Parser
 
-from globalspectrum import is_global_indecomposable, is_global_spectrum
+from globalspectrum import is_global_indecomposable
 from globalkernel import all_global_kernels
-from minion_globalspectrum import is_global_spectrum_minion_relation_n
+# from minion_globalspectrum import is_global_spectrum_minion_relation_n
 
 
 if __name__ == "__main__":
@@ -23,7 +23,7 @@ if __name__ == "__main__":
         if len(sub) != len(helmet):
             if not check_isos(sub, subs, sub.type):
                 subs.append(sub.continous()[0])
-    
+
     print("Is globally indecomposable? %s" % is_global_indecomposable(helmet))
 
     print("Total subalgebras: %s" % len(subs))

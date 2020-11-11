@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from folpy.semantics.lattices import Projective
-
 
 def minimals(sigma):
     """

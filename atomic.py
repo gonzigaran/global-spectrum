@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from functools import lru_cache
-
 from utils import extend_const_sys, extend_non_sol_sys
 
 
-#@lru_cache(maxsize=64)
 def delta(ConQ_A, thetas, atoms, ix_tuple, i_atom):
     """
 
@@ -27,7 +24,7 @@ def is_global_indecomposable_atomics(ConQ_A):
 
     >>> from folpy.examples.lattices import *
     >>> is_global_indecomposable_atomics(gen_chain(5).congruence_lattice())
-    True
+    False
 
     """
     A = ConQ_A.algebra
@@ -36,13 +33,13 @@ def is_global_indecomposable_atomics(ConQ_A):
     thetas.remove(A.mincon())
     n = len(thetas)
     n_atoms = len(atoms)
-    pre2 = [[i, j] 
-                for i in range(n) 
-                for j in range(i,n) 
-                if (ConQ_A.meet(thetas[i], thetas[j]) == A.mincon()
-                and thetas[i] != thetas[j])
+    pre2 = [[i, j]
+            for i in range(n)
+            for j in range(i, n)
+            if (ConQ_A.meet(thetas[i], thetas[j]) == A.mincon()
+            and thetas[i] != thetas[j])
             ]
-    slots_old = [([i],[]) for i in range(n)]
+    slots_old = [([i], []) for i in range(n)]
     slots_new = slots_old.copy()
     for i in range(1, n):
         alpha = thetas[i]
@@ -51,8 +48,8 @@ def is_global_indecomposable_atomics(ConQ_A):
             if i <= pre_atomic[-1]:
                 continue
 
-            # 1. Chequeo que con la nueva congruencia, la tupla sea preatomica 
-            is_new_pre_atomic = all([j,i] in pre2 for j in pre_atomic)
+            # 1. Chequeo que con la nueva congruencia, la tupla sea preatomica
+            is_new_pre_atomic = all([j, i] in pre2 for j in pre_atomic)
             if not is_new_pre_atomic:
                 continue
             new_pre_atomic = pre_atomic + [i]
@@ -62,13 +59,23 @@ def is_global_indecomposable_atomics(ConQ_A):
             not_related_atoms = []
             for i_atom in range(n_atoms):
                 if ConQ_A.lt(atoms[i_atom], alpha):
-                    delta_i_atom = delta(ConQ_A, thetas, atoms, pre_atomic, i_atom)
+                    delta_i_atom = delta(ConQ_A,
+                                         thetas,
+                                         atoms,
+                                         pre_atomic,
+                                         i_atom)
                     has_future = has_future and ConQ_A.lt(alpha, delta_i_atom)
-                elif any(ConQ_A.lt(atoms[i_atom], thetas[x]) for x in pre_atomic):
-                    alpha_j_list = [x for x in pre_atomic if ConQ_A.lt(atoms[i_atom], thetas[x])]
+                elif any(ConQ_A.lt(atoms[i_atom], thetas[x])
+                         for x in pre_atomic):
+                    alpha_j_list = [x for x in pre_atomic
+                                    if ConQ_A.lt(atoms[i_atom], thetas[x])]
                     assert len(alpha_j_list) == 1
                     alpha_j = thetas[alpha_j_list[0]]
-                    has_future = has_future and ConQ_A.lt(alpha_j, ConQ_A.join(atoms[i_atom], alpha))
+                    result = ConQ_A.lt(
+                        alpha_j,
+                        ConQ_A.join(atoms[i_atom], alpha)
+                        )
+                    has_future = has_future and result
                 else:
                     not_related_atoms.append(i_atom)
             if not has_future:
@@ -98,7 +105,8 @@ def is_global_indecomposable_atomics(ConQ_A):
                                          atoms,
                                          new_pre_atomic,
                                          i_atom)
-                    if all(not ConQ_A.lt(thetas[x], delta_i_atom) for x in new_pre_atomic):
+                    if all(not ConQ_A.lt(thetas[x], delta_i_atom)
+                            for x in new_pre_atomic):
                         is_decomposable = False
                         break
                 if is_decomposable:
@@ -106,7 +114,7 @@ def is_global_indecomposable_atomics(ConQ_A):
 
             # 5. Agregar lote
             slots_new.append((new_pre_atomic, vectors_new))
-        
+
         slots_old = slots_new.copy()
-    
+
     return True

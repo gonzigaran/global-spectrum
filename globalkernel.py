@@ -2,11 +2,12 @@
 # -*- coding: utf8 -*-
 
 from datetime import datetime
+from folpy.semantics.lattices import Projective
 
-from utils import extend_const_sys, extend_non_sol_sys, antichain, Projective
+from utils import extend_const_sys, extend_non_sol_sys, antichain
 
 
-def all_global_kernels(A, 
+def all_global_kernels(A,
                        sigma,
                        all_solutions=True,
                        sigma_full=False,
@@ -24,7 +25,7 @@ def all_global_kernels(A,
     projective = Projective(sigma + [A.mincon()], full=sigma_full)
     for i in range(n):
         if verbose:
-            print("delta nº: %s (%s total)" % (i,n))
+            print("delta nº: %s (%s total)" % (i, n))
             print(sigma[i])
             print("Iterative set volume: %s" % len(H_old))
             print("Time: %s" % (datetime.now() - start_time))

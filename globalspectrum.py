@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from utils import extend_const_sys, extend_non_sol_sys, minimals, Projective
+from folpy.semantics.lattices import Projective
+
+from utils import extend_const_sys, extend_non_sol_sys, minimals
 from globalkernel import all_global_kernels
 
 
@@ -61,7 +63,10 @@ def is_global_indecomposable(A):
     """
     sigma = A.congruences()
     sigma.remove(A.mincon())
-    return all_global_kernels(A, sigma, all_solutions=False, sigma_full=True) == []
+    return all_global_kernels(A,
+                              sigma,
+                              all_solutions=False,
+                              sigma_full=True) == []
 
 
 if __name__ == "__main__":
