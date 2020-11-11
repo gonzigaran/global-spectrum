@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from folpy.semantics.congruences import sup_proj
+from folpy.semantics.lattices import Projective
 
 
 def minimals(sigma):
@@ -38,7 +38,7 @@ def gen_roots(elements, delta):
     return result
 
 
-def extend_const_sys(sigma, intersection, deltas, i):
+def extend_const_sys(projective, sigma, intersection, deltas, i):
     """
     Dado un conjunto de congruencias y una congruencia nueva, genera sistemas
     sin solucion con los primeros elementos constantes
@@ -49,9 +49,8 @@ def extend_const_sys(sigma, intersection, deltas, i):
         return output
     gammas = []
     for k in range(n):
-        gammas.append(sup_proj(sigma,
-                               sigma[i],
-                               sigma[deltas[k]]))
+        gammas.append(projective.join(sigma[i],
+                                      sigma[deltas[k]]))
     algebra = sigma[i].algebra
     for a in algebra.universe:
         blocks = [gammas[k].block(a) for k in range(n)]
@@ -67,16 +66,17 @@ def extend_const_sys(sigma, intersection, deltas, i):
     return output
 
 
-def extend_non_sol_sys(sigma, deltas, i, vector):
+def extend_non_sol_sys(projective, sigma, deltas, i, vector):
     """
     Dado un conjunto de sismtemas de congruencias sin solucion y una
     congruencia nueva, extiende el sistema a nuevos sistemas sin solucion
     """
     output = []
     n = len(deltas)
-    blocks = [(sup_proj(sigma,
-                        sigma[i],
-                        sigma[deltas[k]])).block(vector[k]) for k in range(n)]
+    blocks = [(projective.join(
+                    sigma[i],
+                    sigma[deltas[k]]
+                            )).block(vector[k]) for k in range(n)]
     elements = frozenset.intersection(*blocks)
     elements_roots = gen_roots(elements, sigma[i])
     for z in elements_roots:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-from utils import extend_const_sys, extend_non_sol_sys, minimals
+from utils import extend_const_sys, extend_non_sol_sys, minimals, Projective
 from globalkernel import all_global_kernels
 
 
@@ -21,10 +21,16 @@ def is_global_spectrum(A, sigma):
     deltas = []
     vectors = []
     intersection = A.maxcon()
+    projective = Projective(sigma)
     for i in range(len(sigma_m)):
-        vectors_new = extend_const_sys(sigma, intersection, deltas, i)
+        vectors_new = extend_const_sys(projective,
+                                       sigma,
+                                       intersection,
+                                       deltas,
+                                       i)
         for vector in vectors:
-            vectors_new = vectors_new + extend_non_sol_sys(sigma,
+            vectors_new = vectors_new + extend_non_sol_sys(projective,
+                                                           sigma,
                                                            deltas,
                                                            i,
                                                            vector)
@@ -55,7 +61,7 @@ def is_global_indecomposable(A):
     """
     sigma = A.congruences()
     sigma.remove(A.mincon())
-    return all_global_kernels(A, sigma, all_solutions=False) == []
+    return all_global_kernels(A, sigma, all_solutions=False, sigma_full=True) == []
 
 
 if __name__ == "__main__":
