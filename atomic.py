@@ -4,12 +4,10 @@
 from utils import extend_const_sys, extend_non_sol_sys
 
 
-def delta(ConQ_A, thetas, atoms, ix_tuple, i_atom):
+def delta(ConQ_A, alphas, atom):
     """
 
     """
-    atom = atoms[i_atom]
-    alphas = [thetas[i] for i in ix_tuple]
     joins = [ConQ_A.join(atom, alpha) for alpha in alphas]
     result = joins[0]
     for join in joins:
@@ -17,14 +15,24 @@ def delta(ConQ_A, thetas, atoms, ix_tuple, i_atom):
     return result
 
 
-def is_global_indecomposable_atomics(ConQ_A):
+def is_global_indecomposable_atomics(ConQ_A, return_atomics=False):
     """
     Dada un algebra, decide si es globalmente indescomponible, usando el
     teorema de atomics
 
     >>> from folpy.examples.lattices import *
+    >>> is_global_indecomposable_atomics(gen_chain(2).congruence_lattice())
+    True
+    >>> is_global_indecomposable_atomics(gen_chain(3).congruence_lattice())
+    True
     >>> is_global_indecomposable_atomics(gen_chain(5).congruence_lattice())
     False
+    >>> is_global_indecomposable_atomics(rhombus.congruence_lattice())
+    False
+    >>> is_global_indecomposable_atomics(M3.congruence_lattice())
+    True
+    >>> is_global_indecomposable_atomics(N5.congruence_lattice())
+    True
 
     """
     A = ConQ_A.algebra
@@ -32,14 +40,13 @@ def is_global_indecomposable_atomics(ConQ_A):
     atoms = ConQ_A.atoms.copy()
     thetas.remove(A.mincon())
     n = len(thetas)
-    n_atoms = len(atoms)
     pre2 = [[i, j]
             for i in range(n)
-            for j in range(i, n)
-            if (ConQ_A.meet(thetas[i], thetas[j]) == A.mincon()
-            and thetas[i] != thetas[j])
+            for j in range(i + 1, n)
+            if ConQ_A.meet(thetas[i], thetas[j]) == A.mincon()
             ]
-    slots_old = [([i], []) for i in range(n)]
+    slots_old = [([i], []) for i in range(n)]  # Conjunto de la recursión,
+    # contine pares de tuplas preatomicas junto a sus sistemas sin solución
     slots_new = slots_old.copy()
     for i in range(1, n):
         alpha = thetas[i]
@@ -57,29 +64,22 @@ def is_global_indecomposable_atomics(ConQ_A):
             # 2. Test de futuro
             has_future = True
             not_related_atoms = []
-            for i_atom in range(n_atoms):
-                if ConQ_A.lt(atoms[i_atom], alpha):
+            atoms_copy = atoms.copy()
+            while atoms_copy and has_future:
+                atom = atoms_copy.pop()
+                if ConQ_A.le(atom, alpha):
                     delta_i_atom = delta(ConQ_A,
-                                         thetas,
-                                         atoms,
-                                         pre_atomic,
-                                         i_atom)
-                    has_future = has_future and ConQ_A.lt(alpha, delta_i_atom)
-                elif any(ConQ_A.lt(atoms[i_atom], thetas[x])
-                         for x in pre_atomic):
-                    alpha_j_list = [x for x in pre_atomic
-                                    if ConQ_A.lt(atoms[i_atom], thetas[x])]
+                                         [thetas[i] for i in pre_atomic],
+                                         atom)
+                    has_future = ConQ_A.le(alpha, delta_i_atom)
+                elif any(ConQ_A.le(atom, thetas[j]) for j in pre_atomic):
+                    alpha_j_list = [j for j in pre_atomic
+                                    if ConQ_A.le(atom, thetas[j])]
                     assert len(alpha_j_list) == 1
                     alpha_j = thetas[alpha_j_list[0]]
-                    result = ConQ_A.lt(
-                        alpha_j,
-                        ConQ_A.join(atoms[i_atom], alpha)
-                        )
-                    has_future = has_future and result
+                    has_future = ConQ_A.le(alpha_j, ConQ_A.join(atom, alpha))
                 else:
-                    not_related_atoms.append(i_atom)
-            if not has_future:
-                continue
+                    not_related_atoms.append(atom)
 
             # 3. Extender los vectores
             vectors_new = extend_const_sys(ConQ_A,
@@ -96,21 +96,25 @@ def is_global_indecomposable_atomics(ConQ_A):
                                                    vector)
 
             # 4. Chequear A descomponible con test de presente
-            if not vectors_new:
+            if not vectors_new:  # Todo sistema para new_pre_atomic tiene
+                # solucion
                 is_decomposable = True
                 # Test de presente
-                for i_atom in not_related_atoms:
+                while not_related_atoms and is_decomposable:
+                    atom = not_related_atoms.pop()
                     delta_i_atom = delta(ConQ_A,
-                                         thetas,
-                                         atoms,
-                                         new_pre_atomic,
-                                         i_atom)
-                    if all(not ConQ_A.lt(thetas[x], delta_i_atom)
-                            for x in new_pre_atomic):
+                                         [thetas[i] for i in new_pre_atomic],
+                                         atom)
+                    if all(not ConQ_A.le(thetas[j], delta_i_atom)
+                            for j in new_pre_atomic):  # Si new_pre_atomic
+                        # no es atomica
                         is_decomposable = False
-                        break
-                if is_decomposable:
-                    return False
+                if is_decomposable:  # new_pre_atomic es atomica y todo sistema
+                    # tiene solucion
+                    if return_atomics:
+                        [thetas[i] for i in new_pre_atomic]
+                    else:
+                        return False
 
             # 5. Agregar lote
             slots_new.append((new_pre_atomic, vectors_new))
