@@ -12,13 +12,13 @@ def minimals(sigma):
     return result
 
 
-def antichain(sigma, i, deltas):
+def antichain(deltas, tita):
     """
-    Dado un conjuntos de congruencias `delta` y una congruencia nueva `i`,
-    decide si `i` es incomparable con las congruencias de `delta`
+    Dado un conjuntos de congruencias `deltas` y una congruencia nueva `tita`,
+    decide si `tita` es incomparable con las congruencias de `deltas`
     """
-    for j in deltas:
-        if sigma[i] <= sigma[j] or sigma[j] <= sigma[i]:
+    for delta in deltas:
+        if tita <= delta or delta <= tita:
             return False
     return True
 
@@ -36,35 +36,35 @@ def gen_roots(elements, delta):
     return result
 
 
-def extend_const_sys(projective, sigma, intersection, deltas, i):
+def extend_const_sys(projective, deltas, tita):
     """
     Dado un conjunto de congruencias y una congruencia nueva, genera sistemas
     sin solucion con los primeros elementos constantes
     """
+    gammas = []
+    for delta in deltas:
+        gammas.append(projective.join(tita, delta))
+    universe = tita.algebra.universe.copy()
     output = []
     n = len(deltas)
     if n == 0:
         return output
-    gammas = []
-    for k in range(n):
-        gammas.append(projective.join(sigma[i],
-                                      sigma[deltas[k]]))
-    algebra = sigma[i].algebra
-    for a in algebra.universe:
-        blocks = [gammas[k].block(a) for k in range(n)]
+    while universe:
+        a = universe.pop()
+        blocks = [gamma.block(a) for gamma in gammas]
         elements = frozenset.intersection(*blocks)
-        elements_roots = gen_roots(elements, sigma[i])
+        blocks = [delta.block(a) for delta in deltas]
+        solutions = frozenset.intersection(*blocks)
+        elements_roots = gen_roots(elements - solutions, tita)
         for z in elements_roots:
-            blocks = [sigma[deltas[k]].block(a) for k in range(n)]
-            blocks += [sigma[i].block(z)]
-            solutions = frozenset.intersection(*blocks)
-            if solutions == frozenset({}):
+            if solutions.intersection(tita.block(z)) == frozenset({}):
                 a_tuple = n * [a]
                 output.append(a_tuple + [z])
+        universe = [x for x in universe if x not in solutions]
     return output
 
 
-def extend_non_sol_sys(projective, sigma, deltas, i, vector):
+def extend_non_sol_sys(projective, deltas, tita, vector):
     """
     Dado un conjunto de sismtemas de congruencias sin solucion y una
     congruencia nueva, extiende el sistema a nuevos sistemas sin solucion
@@ -72,11 +72,11 @@ def extend_non_sol_sys(projective, sigma, deltas, i, vector):
     output = []
     n = len(deltas)
     blocks = [(projective.join(
-                    sigma[i],
-                    sigma[deltas[k]]
+                    tita,
+                    deltas[k]
                             )).block(vector[k]) for k in range(n)]
     elements = frozenset.intersection(*blocks)
-    elements_roots = gen_roots(elements, sigma[i])
+    elements_roots = gen_roots(elements, tita)
     for z in elements_roots:
         output.append(vector + [z])
     return output

@@ -24,20 +24,17 @@ def is_global_spectrum(A, sigma):
     vectors = []
     intersection = A.maxcon()
     projective = Projective(sigma)
-    for i in range(len(sigma_m)):
+    for tita in sigma_m:
         vectors_new = extend_const_sys(projective,
-                                       sigma,
-                                       intersection,
                                        deltas,
-                                       i)
+                                       tita)
         for vector in vectors:
             vectors_new = vectors_new + extend_non_sol_sys(projective,
-                                                           sigma,
                                                            deltas,
-                                                           i,
+                                                           tita,
                                                            vector)
-        deltas.append(i)
-        intersection = intersection & sigma[i]
+        deltas.append(tita)
+        intersection = intersection & tita
         vectors = vectors_new
     if vectors == []:
         return True
@@ -45,7 +42,7 @@ def is_global_spectrum(A, sigma):
         return False
 
 
-def is_global_indecomposable(A):
+def is_global_indecomposable(A, congruence_lattice=None, verbose=False):
     """
     Dada un algebra, decide si es globalmente indescomponible
 
@@ -61,12 +58,17 @@ def is_global_indecomposable(A):
     >>> is_global_indecomposable(rhombus)
     False
     """
-    sigma = A.congruences()
+    if congruence_lattice:
+        sigma = congruence_lattice.universe.copy()
+    else:
+        sigma = A.congruences().copy()
     sigma.remove(A.mincon())
     return all_global_kernels(A,
                               sigma,
                               all_solutions=False,
-                              sigma_full=True) == []
+                              sigma_full=True,
+                              verbose=verbose,
+                              projective=congruence_lattice) == []
 
 
 if __name__ == "__main__":
