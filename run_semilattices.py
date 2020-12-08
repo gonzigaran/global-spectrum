@@ -94,10 +94,8 @@ if __name__ == "__main__":
           (datetime.now() - start_helmet_kernel))
     print("Tiempo total: %s" % (datetime.now() - start_time))
     print("--------------------------")
+    print("\n\n")
 
-    print("\n\n\n")
-    print("Tiempo total: %s" % (datetime.now() - start_time))
-    print("\n\n\n")
     kernels = all_global_kernels(
         helmet,
         sigma,
@@ -105,3 +103,9 @@ if __name__ == "__main__":
         verbose=True)
 
     print("Global kernels: %s" % kernels)
+
+    print("--------------------------")
+    print("\n\n")
+    print("Tiempo total: %s" % (datetime.now() - start_time))
+    print("\n\n")
+    print("--------------------------")
