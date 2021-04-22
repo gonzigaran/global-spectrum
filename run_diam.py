@@ -4,13 +4,19 @@
 from datetime import datetime
 from functools import reduce
 
-from folpy.semantics.classes import check_isos
 from folpy.utils.parser.parser import Parser
 
 from globalspectrum import is_global_indecomposable
 # from globalkernel import all_global_kernels
 from atomic import is_global_indecomposable_atomics
 # from minion_globalspectrum import is_global_spectrum_minion_relation_n
+
+
+def check_isos(sub, subs):
+    for s in subs:
+        if sub.is_isomorphic_graph(s):
+            return True
+    return False
 
 
 def gen_subdirect_sublattices(lattices, verbose=False):
@@ -22,9 +28,10 @@ def gen_subdirect_sublattices(lattices, verbose=False):
     for emb, sub in L.substructures():
         j = j + 1
         if j % 500 == 0:
-            print('-------------- %s ' % j)
-        if sub.is_subdirect():
-            if not check_isos(sub, subs, sub.type):
+            print('-------------- %s (Time: %s)' %
+                  (j, (datetime.now() - start_time)))
+        if sub.is_subdirect() and not sub.is_isomorphic(L):
+            if not check_isos(sub, subs):
                 subs.append(sub)
                 i = i + 1
                 if i % 10 == 0:
@@ -52,6 +59,10 @@ if __name__ == "__main__":
     print("--------------------------")
     print("\n")
 
+    print("--------------------------")
+    print("Diam*2")
+    print("--------------------------")
+    print("\n")
     subs_Diam2 = gen_subdirect_sublattices([M3, C2], verbose=True)
 
     i = 0
@@ -60,6 +71,10 @@ if __name__ == "__main__":
         # lat.draw()
         i += 1
 
+    print("--------------------------")
+    print("Diam*Diam")
+    print("--------------------------")
+    print("\n")
     subs_DiamDiam = gen_subdirect_sublattices([M3, M3], verbose=True)
 
     i = 0
