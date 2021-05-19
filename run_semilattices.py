@@ -3,13 +3,21 @@
 
 from datetime import datetime
 
-from folpy.semantics.classes import check_isos
 from folpy.utils.parser.parser import Parser
+# from folpy.semantics.algebras import Quotient
+# from folpy.utils import latdraw
 
 from globalspectrum import is_global_indecomposable
 from globalkernel import all_global_kernels
 from atomic import is_global_indecomposable_atomics
 # from minion_globalspectrum import is_global_spectrum_minion_relation_n
+
+
+def check_isos(sub, subs):
+    for s in subs:
+        if sub.is_isomorphic(s):
+            return True
+    return False
 
 
 if __name__ == "__main__":
@@ -26,7 +34,8 @@ if __name__ == "__main__":
     print("\n")
 
     start_sigma = datetime.now()
-    sigma = helmet.congruences_in([c2, c3, A])
+    # sigma = helmet.congruences_in([c2, c3, A])
+    sigma = helmet.congruences()
 
     print("--------------------------")
     print("Tiempo para crear sigma: %s" % (datetime.now() - start_sigma))
@@ -38,7 +47,7 @@ if __name__ == "__main__":
     subs = []
     for emb, sub in subalgebras:
         if len(sub) != len(helmet):
-            if not check_isos(sub, subs, sub.type):
+            if not check_isos(sub, subs):
                 subs.append(sub.continous()[0])
 
     start_con_helmet = datetime.now()
@@ -97,10 +106,15 @@ if __name__ == "__main__":
     print("\n\n")
 
     kernels = all_global_kernels(
-        helmet,
-        sigma,
-        all_solutions=False,
-        verbose=True)
+          helmet,
+          sigma,
+          all_solutions=False,
+          verbose=False
+    )
+#     latdraw.LatDraw(helmet)
+#     for tita in kernels:
+#         quotient = Quotient(helmet, tita)
+#         latdraw.LatDraw(quotient)
 
     print("Global kernels: %s" % kernels)
 
