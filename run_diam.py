@@ -3,6 +3,7 @@
 
 from datetime import datetime
 from functools import reduce
+import logging
 
 from folpy.utils.parser.parser import Parser
 
@@ -28,41 +29,39 @@ def gen_subdirect_sublattices(lattices, verbose=False):
     for emb, sub in L.substructures():
         j = j + 1
         if j % 500 == 0:
-            print('-------------- %s (Time: %s)' %
-                  (j, (datetime.now() - start_time)))
+            logging.debug('%s (Time: %s)', j, (datetime.now() - start_time))
         if sub.is_subdirect() and not sub.is_isomorphic(L):
             if not check_isos(sub, subs):
                 subs.append(sub)
                 i = i + 1
                 if i % 10 == 0:
-                    print(i)
+                    logging.debug(i)
     if verbose:
-        print("Cantidad de sublattices subdirectos: %s" % len(subs))
-        print("--------------------------")
-        print("Tiempo sublattices: %s" %
-              (datetime.now() - start_time))
-        print("--------------------------")
+        logging.info("Cantidad de sublattices subdirectos: %s", len(subs))
+        logging.info("Tiempo sublattices: %s", (datetime.now() - start_time))
 
     return subs
 
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        filename='run_diam.log',
+        format='%(asctime)s - %(levelname)s: %(message)s',
+        level=logging.DEBUG
+        )
+
     start_time = datetime.now()
     C2 = Parser("examples/lattices/2chain.model").parse()
     M3 = Parser("examples/lattices/M3.model").parse()
     DiamDiam = M3 * M3
     Diam2 = M3 * C2
 
-    print("--------------------------")
-    print("Tiempo carga de modelos: %s" % (datetime.now() - start_time))
-    print("Tiempo total: %s" % (datetime.now() - start_time))
-    print("--------------------------")
-    print("\n")
+    logging.info("Tiempo carga de modelos: %s", (datetime.now() - start_time))
+    logging.info("Tiempo total: %s", (datetime.now() - start_time))
 
-    print("--------------------------")
-    print("Diam*2")
-    print("--------------------------")
-    print("\n")
+    logging.info("--------------------------")
+    logging.info("Diam*2")
+    logging.info("--------------------------")
     subs_Diam2 = gen_subdirect_sublattices([M3, C2], verbose=True)
 
     i = 0
@@ -71,10 +70,9 @@ if __name__ == "__main__":
         # lat.draw()
         i += 1
 
-    print("--------------------------")
-    print("Diam*Diam")
-    print("--------------------------")
-    print("\n")
+    logging.info("--------------------------")
+    logging.info("Diam*Diam")
+    logging.info("--------------------------")
     subs_DiamDiam = gen_subdirect_sublattices([M3, M3], verbose=True)
 
     i = 0
@@ -85,10 +83,11 @@ if __name__ == "__main__":
     i = 0
     for lat in subs_Diam2:
         con_lat = lat.congruence_lattice()
-        print("Is %s globally indecomposable? %s" %
-              (i, is_global_indecomposable_atomics(con_lat)))
-        print("Is %s globally indecomposable? %s" %
-              (i, is_global_indecomposable(lat, congruence_lattice=con_lat)))
+        logging.info("Is %s globally indecomposable? %s" %
+                     (i, is_global_indecomposable_atomics(con_lat)))
+        logging.info("Is %s globally indecomposable? %s" %
+                     (i, is_global_indecomposable(lat,
+                                                  congruence_lattice=con_lat)))
         i += 1
 
     # continuos = subs_Diam2[4].continous()
