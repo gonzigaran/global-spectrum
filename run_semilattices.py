@@ -4,8 +4,8 @@
 from datetime import datetime
 
 from folpy.utils.parser.parser import Parser
-# from folpy.semantics.algebras import Quotient
-# from folpy.utils import latdraw
+from folpy.semantics.algebras import Quotient
+from folpy.utils import latdraw
 
 from globalspectrum import is_global_indecomposable
 from globalkernel import all_global_kernels
@@ -111,10 +111,10 @@ if __name__ == "__main__":
           all_solutions=False,
           verbose=False
     )
-#     latdraw.LatDraw(helmet)
-#     for tita in kernels:
-#         quotient = Quotient(helmet, tita)
-#         latdraw.LatDraw(quotient)
+    latdraw.LatDraw(helmet)
+    for tita in kernels:
+        quotient = Quotient(helmet, tita)
+        latdraw.LatDraw(quotient)
 
     print("Global kernels: %s" % kernels)
 
