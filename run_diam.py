@@ -16,7 +16,7 @@ from atomic import is_global_indecomposable_atomics
 def check_isos(sub, subs):
     for s in subs:
         logging.debug(s.universe)
-        if sub.is_isomorphic_graph(s):
+        if sub.is_isomorphic(s):
             logging.debug("iso")
             return True
     logging.debug("no iso")
@@ -38,7 +38,7 @@ def gen_subdirect_sublattices(lattices, verbose=False):
                 (datetime.now() - start_time))
         is_subdirect = sub.is_subdirect()
         logging.debug("subdirect: %s", is_subdirect)
-        is_iso = sub.is_isomorphic_graph(L)
+        is_iso = sub.is_isomorphic(L)
         logging.debug("iso: %s", is_iso)
         if is_subdirect and not is_iso:
             logging.debug("cumple")
