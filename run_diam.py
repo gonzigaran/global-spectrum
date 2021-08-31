@@ -31,7 +31,7 @@ def gen_subdirect_sublattices(lattices, verbose=False):
     i = 0
     for sub in L.substructures(
             filter_isos=True,
-            filter_subdirect=True,
+            filter_subdirect=False,
             proper=True):
         j = j + 1
         if j % 1 == 0:
