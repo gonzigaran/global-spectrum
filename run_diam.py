@@ -89,10 +89,27 @@ if __name__ == "__main__":
     i = 0
     for lat in subs_DiamDiam:
         lat.to_file('output/diam_variety/DiamDiam_%s.model' % i)
+        # lat.draw()
+        i += 1
+
+    logging.info("--------------------------")
+    logging.info("Globalmente Indescomponibles")
+    logging.info("--------------------------")
+
+    i = 0
+    logging.info("ver globalmente indescomponible para subestructuras de M3xC2")
+    for lat in subs_Diam2:
+        con_lat = lat.congruence_lattice()
+        logging.info("Is %s globally indecomposable? %s" %
+                     (i, is_global_indecomposable_atomics(con_lat)))
+        logging.info("Is %s globally indecomposable? %s" %
+                     (i, is_global_indecomposable(lat,
+                                                  congruence_lattice=con_lat)))
         i += 1
 
     i = 0
-    for lat in subs_Diam2:
+    logging.info("ver globalmente indescomponible para subestructuras de M3xM3")
+    for lat in subs_DiamDiam:
         con_lat = lat.congruence_lattice()
         logging.info("Is %s globally indecomposable? %s" %
                      (i, is_global_indecomposable_atomics(con_lat)))
