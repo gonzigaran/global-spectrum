@@ -29,7 +29,10 @@ def gen_subdirect_sublattices(lattices, verbose=False):
     subs = []
     j = 0
     i = 0
-    for sub in L.substructures():
+    for sub in L.substructures(
+            filter_isos=True,
+            filter_subdirect=True,
+            proper=True):
         j = j + 1
         if j % 1 == 0:
             logging.debug(
