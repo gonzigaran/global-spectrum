@@ -1,5 +1,5 @@
 git+git://github.com/gonzigaran/folpy.git@master
-ipython==7.16.1
+ipython==7.16.3
 flake8==3.8.3
 pytest==5.4.3
 pynauty --no-binary pynauty 
