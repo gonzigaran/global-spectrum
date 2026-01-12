@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     subalgebras = helmet.substructures()
     subs = []
-    for emb, sub in subalgebras:
+    for sub in subalgebras:
         if len(sub) != len(helmet):
             if not check_isos(sub, subs):
                 subs.append(sub.continous()[0])

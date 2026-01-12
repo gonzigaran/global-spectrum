@@ -24,12 +24,17 @@ def check_isos(sub, subs):
 
 
 def gen_subdirect_sublattices(lattices, verbose=False):
+    """
+    Dado un conjunto de reticulados, calcula el producto directo y devuelve
+    todos los subreticulados subdirectas no isomorfas entre sí y al 
+    producto directo
+    """
     start_time = datetime.now()
-    L = reduce((lambda x, y: x * y), lattices)
+    P = reduce((lambda x, y: x * y), lattices)
     subs = []
     j = 0
     i = 0
-    for sub in L.substructures(
+    for sub in P.substructures(
             filter_isos=True,
             filter_subdirect=True,
             proper=True):

@@ -1,4 +1,4 @@
-git+git://github.com/gonzigaran/folpy.git@master
+folpy @ git+https://github.com/gonzigaran/folpy@master
 ipython==7.16.3
 flake8==3.8.3
 pytest==5.4.3
